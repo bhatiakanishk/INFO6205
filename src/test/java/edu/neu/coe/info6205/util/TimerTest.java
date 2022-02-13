@@ -12,6 +12,7 @@ public class TimerTest {
         pre = 0;
         run = 0;
         post = 0;
+        result = 0;
     }
 
     @Test
@@ -140,9 +141,34 @@ public class TimerTest {
         assertEquals(10, post);
     }
 
+    @Test // Slow
+    public void testRepeat4() {
+        final Timer timer = new Timer();
+        final int zzz = 20;
+        final double mean = timer.repeat(10,
+                () -> zzz, // supplier
+                t -> { // function
+                    result = t;
+                    GoToSleep(10, 0);
+                    return null;
+                }, t -> { // pre-function
+                    GoToSleep(10, -1);
+                    return 2*t;
+                }, t -> GoToSleep(10, 1) // post-function
+        );
+        assertEquals(10, new PrivateMethodTester(timer).invokePrivate("getLaps"));
+        assertEquals(zzz, 20, 6);
+        assertEquals(10, run);
+        assertEquals(10, pre);
+        assertEquals(10, post);
+        // This test is designed to ensure that the preFunction is properly implemented in repeat.
+        assertEquals(40, result);
+    }
+
     int pre = 0;
     int run = 0;
     int post = 0;
+    int result = 0;
 
     private void GoToSleep(long mSecs, int which) {
         try {
