@@ -10,6 +10,7 @@ package edu.neu.coe.info6205.union_find;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -200,5 +201,40 @@ public class UF_HWQUPC implements UF {
         // START
         parent[i] = parent[parent[i]];
         // END 
+    }
+
+    /**
+     * This prints the pairs and connections
+     */
+    private static void printResults(int i){
+        int p = 0;
+        int c = 0;
+        Random r = new Random();
+        UF_HWQUPC uf = new UF_HWQUPC(i);
+
+        while(uf.components() != 1){
+            int x = (int) (r.nextInt(i));
+            int y = (int) (r.nextInt(i));
+            p++;
+
+            if(!uf.connected(x, y)){
+                uf.union(x, y);
+                c++;
+            }
+        }
+        System.out.println("Pairs: " + p);
+        System.out.println("Connections: " + c);
+    }
+
+    /**
+     * Main Function
+     */
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the number of sites: ");
+        int s = sc.nextInt();
+
+        UF_HWQUPC uf = new UF_HWQUPC(s, true);
+        printResults(s);
     }
 }
