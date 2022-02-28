@@ -206,35 +206,50 @@ public class UF_HWQUPC implements UF {
     /**
      * This prints the pairs and connections
      */
-    private static void printResults(int i){
-        int p = 0;
-        int c = 0;
+    private static int results(UF_HWQUPC uf, int i){
+        int result = 0;
         Random r = new Random();
-        UF_HWQUPC uf = new UF_HWQUPC(i);
 
-        while(uf.components() != 1){
-            int x = (int) (r.nextInt(i));
-            int y = (int) (r.nextInt(i));
-            p++;
+        while(uf.count > 1){
+            int x = r.nextInt(i);
+            int y = r.nextInt(i);
 
-            if(!uf.connected(x, y)){
+            if(x == y)
+                continue;
+
+            if(!uf.connected(x , y))
                 uf.union(x, y);
-                c++;
-            }
+                result++;
         }
-        System.out.println("Pairs: " + p);
-        System.out.println("Connections: " + c);
+        //System.out.println("Pairs: " + p);
+        //System.out.println("Connections: " + c);
+        return result;
     }
 
     /**
      * Main Function
      */
     public static void main(String[] args){
+        int a = 0;
+        double coefficient = 0;
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the number of sites: ");
-        int s = sc.nextInt();
+        System.out.println("Enter the number of runs: ");
+        int runs = sc.nextInt();
 
-        UF_HWQUPC uf = new UF_HWQUPC(s, true);
-        printResults(s);
+        for(int i = 500; i <= 10000; i = i + 500){
+            int total = 0;
+            for(int j = 0; j < runs; j++){
+                UF_HWQUPC uf = new UF_HWQUPC(i);
+                total += results(uf, i);
+            }
+            int average = total/runs;
+            double log = Math.log(i) * i;
+            coefficient += average/log;
+            a++;
+            System.out.println("n: " + i + " m: " + average);
+            System.out.println("Coefficient: " + (average/log) + "\n");
+        }
+        System.out.println("Average Coefficient: " + (coefficient/a));
+        //printResults(s);
     }
 }
