@@ -8,6 +8,8 @@
 package edu.neu.coe.info6205.union_find;
 
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Random;
 
 /**
  * Height-weighted Quick Union with Path Compression
@@ -81,7 +83,13 @@ public class UF_HWQUPC implements UF {
     public int find(int p) {
         validate(p);
         int root = p;
-        // FIXME
+        // START
+        while(root != parent[root]){
+            if(pathCompression){
+                doPathCompression(root);
+            }
+            root = parent[root];
+        }
         // END 
         return root;
     }
@@ -169,7 +177,19 @@ public class UF_HWQUPC implements UF {
     private boolean pathCompression;
 
     private void mergeComponents(int i, int j) {
-        // FIXME make shorter root point to taller one
+        // START
+        int p = find(i);
+        int q = find(j);
+        if(p == q){
+            return;
+        }
+        if(height[p] < height[q]){
+            updateParent(p, q);
+            updateHeight(q, p);
+        } else{
+            updateParent(q, p);
+            updateHeight(p, q);
+        }
         // END 
     }
 
@@ -177,7 +197,8 @@ public class UF_HWQUPC implements UF {
      * This implements the single-pass path-halving mechanism of path compression
      */
     private void doPathCompression(int i) {
-        // FIXME update parent to value of grandparent
+        // START
+        parent[i] = parent[parent[i]];
         // END 
     }
 }
