@@ -1,5 +1,6 @@
 package edu.neu.coe.info6205.sort.par;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -9,14 +10,15 @@ import java.util.concurrent.CompletableFuture;
  */
 class ParSort {
 
+    public static int height = 2;
     public static int cutoff = 1000;
 
-    public static void sort(int[] array, int from, int to) {
-        if (to - from < cutoff) Arrays.sort(array, from, to);
+    public static void sort(int[] array, int from, int to, ForkJoinPool pool, int currentHeight) {
+        if ((to - from < cutoff) || currentHeight >= height) Arrays.sort(array, from, to);
         else {
             // FIXME next few lines should be removed from public repo.
-            CompletableFuture<int[]> parsort1 = parsort(array, from, from + (to - from) / 2); // TO IMPLEMENT
-            CompletableFuture<int[]> parsort2 = parsort(array, from + (to - from) / 2, to); // TO IMPLEMENT
+            CompletableFuture<int[]> parsort1 = parsort(array, from, from + (to - from) / 2, pool, currentHeight); // TO IMPLEMENT
+            CompletableFuture<int[]> parsort2 = parsort(array, from + (to - from) / 2, to, pool, currentHeight); // TO IMPLEMENT
             CompletableFuture<int[]> parsort = parsort1.thenCombine(parsort2, (xs1, xs2) -> {
                 int[] result = new int[xs1.length + xs2.length];
                 // TO IMPLEMENT
@@ -42,15 +44,15 @@ class ParSort {
         }
     }
 
-    private static CompletableFuture<int[]> parsort(int[] array, int from, int to) {
+    private static CompletableFuture<int[]> parsort(int[] array, int from, int to, ForkJoinPool pool, int currentHeight) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     int[] result = new int[to - from];
                     // TO IMPLEMENT
                     System.arraycopy(array, from, result, 0, result.length);
-                    sort(result, 0, to - from);
+                    sort(result, 0, to - from, pool, currentHeight);
                     return result;
-                }
+                }, pool
         );
     }
 }
